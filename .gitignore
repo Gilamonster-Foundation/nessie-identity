@@ -1,0 +1,18 @@
+# Rust
+/target
+**/*.rs.bk
+
+# Secrets / local config — never commit these
+.env
+.env.*
+*.pem
+*.key
+*.crt
+*.nk
+*.seed
+secrets/
+.secrets/
+
+# OS / editor
+.DS_Store
+*.swp

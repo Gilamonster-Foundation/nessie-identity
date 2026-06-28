@@ -1,0 +1,25 @@
+# gitleaks configuration for nessie-identity (public repo).
+# Extends the default ruleset and allowlists documentation placeholders so the
+# RFC 5737 / example.* values used throughout the docs do not trip secret rules.
+
+title = "nessie-identity gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Documentation placeholders (RFC 5737 TEST-NET, example.* domains)."
+regexes = [
+  '''example\.(com|lan|org)''',
+  '''(^|[^0-9])192\.0\.2\.''',
+  '''(^|[^0-9])198\.51\.100\.''',
+  '''(^|[^0-9])203\.0\.113\.''',
+  '''EXAMPLE\.LAN''',
+  '''dc=example,dc=lan''',
+  '''user@example\.com''',
+  '''secret/path/to/value''',
+]
+paths = [
+  '''LICENSE-APACHE''',
+  '''LICENSE-MIT''',
+]

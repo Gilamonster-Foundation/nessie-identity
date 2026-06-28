@@ -1,0 +1,36 @@
+name: security-audit
+
+# Privacy + secret-leak guardrails. This MUST stay green: it is the gate that
+# keeps internal/operational specifics out of this public repository.
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  secret-scan:
+    name: gitleaks secret scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      # gitleaks-action is free for public repositories.
+      - name: gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITLEAKS_CONFIG: .gitleaks.toml
+
+  internal-specifics:
+    name: internal-specifics linter
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run internal-specifics linter
+        run: bash scripts/check-internal-specifics.sh
+
+  # Placeholder for when Rust code lands: dependency vulnerability audit.
+  # - run: cargo install cargo-audit && cargo audit
