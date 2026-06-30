@@ -1,0 +1,35 @@
+# nessie-identity — per-PR Rust gate.
+#
+# The fast path (fmt + clippy -D warnings + test) for the shared crate. Runs on
+# free GitHub-hosted runners per the test-plan runner strategy (doc 06 §2b: unit /
+# clippy / fast BAT are GH-hosted or ARC; only homelab-touching integration needs
+# ARC). The toolchain is pinned by rust-toolchain.toml, which rustup honors.
+#
+# The merge-blocking privacy gate is the separate security-audit.yml workflow.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: "0"
+
+jobs:
+  rust:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Format check
+        run: cargo fmt --all -- --check
+      - name: Clippy (zero warnings)
+        run: cargo clippy --workspace --all-targets --locked -- -D warnings
+      - name: Test
+        run: cargo test --workspace --locked

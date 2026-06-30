@@ -1,0 +1,30 @@
+# nessie-identity — Cargo workspace.
+#
+# The shared identity crate lands first (crates/nessie-identity); the
+# `nessie-identityd` orchestrator service is a later member. Layout mirrors the
+# sibling `nessie-store` workspace.
+[workspace]
+resolver = "2"
+members = ["crates/nessie-identity"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/Gilamonster-Foundation/nessie-identity"
+homepage = "https://github.com/Gilamonster-Foundation/nessie-identity"
+authors = ["Gilamonster Foundation"]
+
+[workspace.dependencies]
+# The published, pure-Rust (ed25519-dalek + blake3) capability lattice — the
+# SAME `Caveats`/`UserKey`/`AgentKey`/`CertChain` that newt-identity consumes.
+# We lift the lattice, we do not reinvent it (architecture doc 01 §4/§8). Pin to
+# match newt-agent's workspace so every consumer of `Caveats` stays in lockstep.
+agent-mesh-protocol = "0.6"
+serde = { version = "1", features = ["derive"] }
+thiserror = "1"
+proptest = "1"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1

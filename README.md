@@ -26,10 +26,43 @@ It pairs with two sibling projects:
 
 ## Status
 
-**Pre-implementation.** The architecture and a phased plan are under **adversarial
-design review**. This repository currently contains only the project's **privacy
-and secret-leak guardrails** (see below) — code lands after the design review
-settles.
+**Early implementation.** The architecture and a phased plan are under
+**adversarial design review**. The privacy guardrails (below) landed first; the
+first code now follows.
+
+### Crate: `nessie-identity`
+
+[`crates/nessie-identity`](crates/nessie-identity) is the shared identity crate —
+the heart of the machine/agent authority plane. It lifts the **published
+`agent-mesh-protocol`** attenuation-only capability lattice (it does not reinvent
+it) and adds:
+
+- `RoleTier` (`Admin`/`Adult`/`Kid`) + `HomelabPrincipal` (one directory-resolved
+  principal per person);
+- a **dollar-budget** authority axis the base lattice does not yet carry;
+- `RoleCaveats` = base caveats ⊕ budget, one attenuation-only element;
+- the **`RoleTier → RoleCaveats` projection** — honoring *separation, not
+  subtraction* (a kid gets a separate volume, not a narrowed view of the family
+  tree);
+- `verify` helpers — "is this run `⊑` this human's role?"
+
+```rust
+use nessie_identity::{HomelabPrincipal, RoleTier, StorageLayout, run_within_role};
+
+let kid = HomelabPrincipal {
+    ad_sid: "S-1-5-21-0-0-0-1107".into(),
+    upn: "kit@EXAMPLE.LAN".into(),
+    role: RoleTier::Kid,
+    uid: 1107,
+    gid: 100,
+};
+let layout = StorageLayout::default();
+let grant = RoleTier::Kid.project(&kid, &layout);
+assert!(run_within_role(&grant, &kid, &layout));
+assert!(!grant.authorizes_write(&layout.family_root)); // kid cannot reach the family tree
+```
+
+Build: `cargo test --workspace` (pinned via `rust-toolchain.toml`).
 
 ## Privacy & security guardrails (enforced first)
 
