@@ -1,0 +1,19 @@
+[package]
+name = "nessie-identity"
+description = "Shared homelab identity crate: HomelabPrincipal + RoleTier + the RoleTier→Caveats projection (with an added dollar-budget axis) over agent-mesh-protocol's attenuation-only capability lattice."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+keywords = ["identity", "ocap", "capability", "rbac"]
+categories = ["authentication"]
+
+[dependencies]
+agent-mesh-protocol = { workspace = true }
+serde = { workspace = true }
+thiserror = { workspace = true }
+
+[dev-dependencies]
+proptest = { workspace = true }
